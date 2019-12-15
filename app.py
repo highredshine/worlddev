@@ -22,15 +22,15 @@ def page_header():
     Returns the page header as a dash `html.Div`
     """
     return html.Div(id='header', children=[
-        html.Div([html.H3('Juho Choi')],
+        html.Div([html.H3('Website Title')],
                  className="ten columns"),
         html.A([html.Img(id='logo', src=app.get_asset_url('github.png'),
                          style={'height': '35px', 'paddingTop': '7%'}),
-                html.Span('Blownhither', style={'fontSize': '2rem', 'height': '35px', 'bottom': 0,
+                html.Span('Juatho', style={'fontSize': '2rem', 'height': '35px', 'bottom': 0,
                                                 'paddingLeft': '4px', 'color': '#a3a7b0',
                                                 'textDecoration': 'none'})],
                className="two columns row",
-               href='https://github.com/blownhither/'),
+               href='https://github.com/juatho/'),
     ], className="row")
 
 
@@ -39,25 +39,7 @@ def description():
     Returns overall project description in markdown
     """
     return html.Div(children=[dcc.Markdown('''
-        # Energy Planner
-        As of today, 138 cities in the U.S. have formally announced 100% renewable energy goals or
-        targets, while others are actively considering similar goals. Despite ambition and progress,
-        conversion towards renewable energy remains challenging.
-
-        Wind and solar power are becoming more cost effective, but they will always be unreliable
-        and intermittent sources of energy. They follow weather patterns with potential for lots of
-        variability. Solar power starts to die away right at sunset, when one of the two daily peaks
-        arrives (see orange curve for load).
-
-        **Energy Planner is a "What-If" tool to assist making power conversion plans.**
-        It can be used to explore load satisfiability under different power contribution with 
-        near-real-time energy production & consumption data.
-
-        ### Data Source
-        Energy Planner utilizes near-real-time energy production & consumption data from [BPA 
-        Balancing Authority](https://www.bpa.gov/news/AboutUs/Pages/default.aspx).
-        The [data source](https://transmission.bpa.gov/business/operations/Wind/baltwg.aspx) 
-        **updates every 5 minutes**. 
+        # Project Description
         ''', className='eleven columns', style={'paddingLeft': '5%'})], className="row")
 
 
@@ -97,14 +79,7 @@ def what_if_description():
     """
     return html.Div(children=[
         dcc.Markdown('''
-        # " What If "
-        So far, BPA has been relying on hydro power to balance the demand and supply of power. 
-        Could our city survive an outage of hydro power and use up-scaled wind power as an
-        alternative? Find below **what would happen with 2.5x wind power and no hydro power at 
-        all**.   
-        Feel free to try out more combinations with the sliders. For the clarity of demo code,
-        only two sliders are included here. A fully-functioning What-If tool should support
-        playing with other interesting aspects of the problem (e.g. instability of load).
+        # Section 1
         ''', className='eleven columns', style={'paddingLeft': '5%'})
     ], className="row")
 
@@ -141,13 +116,7 @@ def architecture_summary():
     """
     return html.Div(children=[
         dcc.Markdown('''
-            # Project Architecture
-            This project uses MongoDB as the database. All data acquired are stored in raw form to the
-            database (with de-duplication). An abstract layer is built in `database.py` so all queries
-            can be done via function call. For a more complicated app, the layer will also be
-            responsible for schema consistency. A `plot.ly` & `dash` app is serving this web page
-            through. Actions on responsive components on the page is redirected to `app.py` which will
-            then update certain components on the page.  
+            # Section 2
         ''', className='row eleven columns', style={'paddingLeft': '5%'}),
 
         html.Div(children=[
