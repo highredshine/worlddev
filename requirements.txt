@@ -8,3 +8,7 @@ requests
 ipywidgets
 notebook
 expiringdict
+google-cloud-bigquery
+google-cloud-bigquery-storage
+pandas-gbq
+pyarrow
