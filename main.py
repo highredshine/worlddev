@@ -27,10 +27,12 @@ def description():
         'textAlign': 'center'
     })
 
-def visualization(cache, countries_dict, indicators_dict):
+def visualization(cache):
     """
     Returns overall project description in markdown
     """
+    countries_dict = cache['countries']
+    indicators_dict = cache['indicators']
     initial_country_value_1 = 'WLD'
     initial_country_value_2 = ['WLD','USA','CHN']
     initial_indicator_value_1 = ['Access to electricity', 
@@ -82,12 +84,10 @@ def visualization(cache, countries_dict, indicators_dict):
         'textAlign': 'center'
     })
 
-def enhancement(cache, countries_dict):
+def enhancement(cache):
     """
     Returns the text and image of architecture summary of the project.
     """
-    countries = countries_dict.values()
-    queries = [cluster.query(cache, country_code) for country_code in countries]
     return html.Div(children=[
         dcc.Markdown('''
             ### Analyzing the Indicators
@@ -97,7 +97,7 @@ def enhancement(cache, countries_dict):
             This will help us analyze whether the indicators help form groups similar to how they are categorized 
             into developed and developing countries.
         '''),
-        dcc.Graph(id='stacked-trend-graph', figure=cluster.clustering(countries, queries)),
+        dcc.Graph(id='stacked-trend-graph', figure=cluster.clustering(cache)),
     ], className='row', style={
         'textAlign': 'center'
     })
@@ -111,13 +111,11 @@ def index():
     })
 
 def main_page(cache):
-    countries_dict = cache['countries']
-    indicators_dict = cache['indicators']
     return html.Div([
         title(),
         description(),
-        visualization(cache, countries_dict, indicators_dict),
-        enhancement(cache, countries_dict),
+        visualization(cache),
+        enhancement(cache),
         index()
     ], style={
         'textAlign': 'center',

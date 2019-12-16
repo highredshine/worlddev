@@ -32,8 +32,27 @@ def query(cache, country_code):
                                            credentials=credentials())
     return cache[country_code]
 
-def clustering(countries, queries):
+def getAll(cache):
+    sql = """
+        SELECT m.country_code
+        FROM `worlddev.wdi.main` as m, `worlddev.wdi.countries` as c
+        WHERE m.country_code = c.country_code
+        GROUP BY country_code
+        HAVING COUNT(DISTINCT m.indicator)>= 249
+    """
+    if 'all' not in cache:
+        cache['all'] = pds.read_gbq(sql, 
+                                           project_id='worlddev', 
+                                           credentials=credentials())
+    countries = cache['all']['country_code']
+    queries = []
+    for country_code in countries:
+        queries.append(query(cache, country_code))
+    return countries, queries
+
+def clustering(cache):
     pca = PCA(n_components=3)
+    countries, queries = getAll(cache)
     embeddings = queries[0].rename(columns={'mean':countries[0]})
     for i in range(1,len(queries)):
         embeddings = pds.merge(embeddings, 
