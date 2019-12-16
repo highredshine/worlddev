@@ -24,7 +24,7 @@ def query(country_code):
             ]
         }
     }
-    df = pds.read_gbq(sql, configuration=config, project_id='worlddev', private_key='key.json')
+    df = pds.read_gbq(sql, configuration=config, project_id='worlddev', credentials='key.json')
     return df
 
 def create_embedding(wld, chn, usa, bra):
