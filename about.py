@@ -47,7 +47,8 @@ def content():
     ], className="row", id='about-content'
     )
 
-about_page = html.Div([
+def about_page():
+    return html.Div([
     title(),
     page_header(),
     content(),

@@ -89,7 +89,8 @@ def index():
         'textAlign': 'center'
     })
 
-main_page = html.Div([
+def main_page():
+    return html.Div([
         title(),
         description(),
         visualization(),
