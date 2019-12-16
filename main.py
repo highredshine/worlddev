@@ -2,7 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from common import title, cache
+from common import title
 import visuals
 import cluster
 
@@ -27,7 +27,7 @@ def description():
         'textAlign': 'center'
     })
 
-def visualization(countries_dict, indicators_dict):
+def visualization(cache, countries_dict, indicators_dict):
     """
     Returns overall project description in markdown
     """
@@ -60,7 +60,7 @@ def visualization(countries_dict, indicators_dict):
             multi=True,
             placeholder="Select an indicator"
         ),
-        dcc.Graph(id='byIndicator-graph', figure=visuals.callback_byIndicator(initial_country_value_1,initial_indicator_value_1)),
+        dcc.Graph(id='byIndicator-graph', figure=visuals.callback_byIndicator(cache, initial_country_value_1,initial_indicator_value_1)),
         dcc.Markdown('''
             #### choose one indicator and pick one or more countries to understand the relevance of the indicator.
         '''),
@@ -77,17 +77,17 @@ def visualization(countries_dict, indicators_dict):
             value=initial_indicator_value_2,
             placeholder="Select an indicator"
         ),
-        dcc.Graph(id='byCountries-graph', figure=visuals.callback_byCountries(initial_country_value_2,initial_indicator_value_2))
+        dcc.Graph(id='byCountries-graph', figure=visuals.callback_byCountries(cache, initial_country_value_2,initial_indicator_value_2))
         ], className="row", style={
         'textAlign': 'center'
     })
 
-def enhancement(countries_dict):
+def enhancement(cache, countries_dict):
     """
     Returns the text and image of architecture summary of the project.
     """
     countries = countries_dict.values()
-    queries = [cluster.query(country_code) for country_code in countries]
+    queries = [cluster.query(cache, country_code) for country_code in countries]
     return html.Div(children=[
         dcc.Markdown('''
             ### Analyzing the Indicators
@@ -110,14 +110,14 @@ def index():
         'textAlign': 'center'
     })
 
-def main_page():
+def main_page(cache):
     countries_dict = cache['countries']
     indicators_dict = cache['indicators']
     return html.Div([
         title(),
         description(),
-        visualization(countries_dict, indicators_dict),
-        enhancement(countries_dict),
+        visualization(cache, countries_dict, indicators_dict),
+        enhancement(cache, countries_dict),
         index()
     ], style={
         'textAlign': 'center',

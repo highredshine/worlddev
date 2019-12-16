@@ -4,9 +4,9 @@ from sklearn.manifold import TSNE
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
 import plotly.graph_objects as go
-from common import credentials, cache
+from common import credentials
 
-def query(country_code):
+def query(cache, country_code):
     sql = """
         SELECT indicator, AVG(value) as mean
         FROM `worlddev.wdi.main`

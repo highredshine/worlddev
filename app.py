@@ -8,6 +8,7 @@ from about import about_page
 from details import details_page
 
 import visuals
+from common import cache
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', '/assets/style.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -23,21 +24,21 @@ app.layout = html.Div([
              [Input('country-dropdown-byIndicator', 'value'),
               Input('indicator-dropdown-byIndicator', 'value')])
 def byIndicator(country_code, indicators):
-    return visuals.callback_byIndicator(country_code, indicators)
+    return visuals.callback_byIndicator(cache, country_code, indicators)
 
 
 @app.callback(Output('byCountries-graph', 'figure'),
              [Input('country-dropdown-byCountries', 'value'),
               Input('indicator-dropdown-byCountries', 'value')])
 def byCountries(country_codes, indicator):
-    return visuals.callback_byCountries(country_codes, indicator)
-    
+    return visuals.callback_byCountries(cache, country_codes, indicator)
+
 
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/':
-        return main_page()
+        return main_page(cache)
     if pathname == '/about':
          return about_page()
     elif pathname == '/details':

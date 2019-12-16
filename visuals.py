@@ -1,8 +1,8 @@
 import plotly.graph_objects as go
 import pandas as pds
-from common import credentials, color, cache
+from common import credentials, color
 
-def query(country_code, indicator):
+def query(cache, country_code, indicator):
     sql = """
         SELECT country_name as country, indicator, year, value
         FROM `worlddev.wdi.main`
@@ -65,14 +65,16 @@ def visualize(queries, by):
                       xaxis_title='Year')
     return fig
 
-def callback_byIndicator(country_code, indicators):
+
+def callback_byIndicator(cache, country_code, indicators):
     queries = []
     for indicator in indicators:
-        queries.append(query(country_code, indicator))
+        queries.append(query(cache, country_code, indicator))
     return visualize(queries, 'indicator')
 
-def callback_byCountries(country_codes, indicator):
+
+def callback_byCountries(cache, country_codes, indicator):
     queries = []
     for country_code in country_codes:
-        queries.append(query(country_code, indicator))
+        queries.append(query(cache, country_code, indicator))
     return visualize(queries, 'country')
