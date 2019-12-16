@@ -1,7 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from common import credentials, title
+from common import title
 
 def index():
     return html.Div([
