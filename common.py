@@ -1,4 +1,5 @@
 import dash_html_components as html
+import pandas as pds
 from google.oauth2 import service_account
 from random import randint
 
@@ -38,3 +39,25 @@ def color():
             color = rand_color()
         COLORS.append(color)
     return color
+
+def countries():
+    sql = """
+        SELECT DISTINCT country_code, short_name as country_name
+        FROM `worlddev.wdi.countries`
+        ORDER BY country_name
+    """
+    df = pds.read_gbq(sql, project_id='worlddev', credentials=credentials())
+    countries = dict(zip(df.country_name, df.country_code))
+    return countries
+
+def indicators():
+    sql = """
+        SELECT DISTINCT series_code as indicator_code, indicator as indicator_name
+        FROM `worlddev.wdi.indicators`
+        ORDER BY indicator_name
+    """
+    df = pds.read_gbq(sql, project_id='worlddev', credentials=credentials())
+    indicators = dict(zip(df.indicator_name, df.indicator_code))
+    return indicators
+
+cache = {}

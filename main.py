@@ -2,12 +2,12 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from common import title
+from common import title, countries, indicators
 import visuals
 import cluster
 
-countries_dict = visuals.countries()
-indicators_dict = visuals.indicators()
+countries_dict = countries()
+indicators_dict = indicators()
 
 def description():
     """
