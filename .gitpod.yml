@@ -6,8 +6,8 @@ ports:
   - port: 8888
   - port: 1050
 tasks:
-  - command: cp -r .jupyter /home/gitpod/ && ipython3 notebook
-  - command: pip3 install -r requirements.txt && (python3 app.py)
+  - command: cp -r .jupyter /home/gitpod/ && ipython3 notebook --ip='*' --NotebookApp.token='' --NotebookApp.password=''
+  - command: pip3 install -r requirements.txt && python3 app.py
 vscode:
   extensions:
     - ms-python.python@2019.9.34911:NHtRMp5fFB2KUUw72DlGug==

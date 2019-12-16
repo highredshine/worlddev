@@ -3,6 +3,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 from common import title
+import visuals
+import cluster
 
 def description():
     """
@@ -29,18 +31,20 @@ def visualization():
     """
     Returns overall project description in markdown
     """
+    country_code = 'WLD'
+    indicator = 'Access to clean fuels and technologies for cooking'
+    df = visuals.query(country_code, indicator)
     return html.Div(children=[
         dcc.Markdown('''
             ### Observing the Indicators
             The data consists all the annual time series data of numerous indicators 
             gathered from all around the world. The default plot shows the world average of some of the
-            representative indicators such as electricity access. There are several ways to oberse the data:
-            #
-            - choose one country and pick one or more indicators to understand the development of the country.
-            #
-            - choose one indicator and pick one or more countries to understand the relevance of the indicator.
+            representative indicators such as electricity access. There are several ways to oberse the data.
+            ###### - choose one country and pick one or more indicators to understand the development of the country.
+            ###### - choose one indicator and pick one or more countries to understand the relevance of the indicator.
         '''),
         # TODO: visualization
+        dcc.Graph(id='stacked-trend-graph', figure=visuals.visualize(df, stack=True)),
         ], className="row", style={
         'textAlign': 'center'
     })
@@ -49,6 +53,11 @@ def enhancement():
     """
     Returns the text and image of architecture summary of the project.
     """
+    wld = cluster.query('WLD')
+    chn = cluster.query('CHN')
+    usa = cluster.query('USA')
+    bra = cluster.query('BRA')
+    embeddings = cluster.create_embedding(wld, chn, usa, bra)
     return html.Div(children=[
         dcc.Markdown('''
             ### Analyzing the Indicators
@@ -60,6 +69,7 @@ def enhancement():
             clusters (development status) change as time passed.
         '''),
         # TODO: clusters
+        dcc.Graph(id='stacked-trend-graph', figure=cluster.clustering(embeddings)),
         dcc.Markdown('''
             The dataset also has categorized all countries into 'income_group.' We can use this data as labels
             for predicting which indicators can most accurately categorize a country to its current development status.
@@ -79,8 +89,6 @@ def index():
         'textAlign': 'center'
     })
 
-
-# set layout to a function which updates upon reloading
 main_page = html.Div([
         title(),
         description(),
