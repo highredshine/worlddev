@@ -60,4 +60,4 @@ def indicators():
     indicators = dict(zip(df.indicator_name, df.indicator_code))
     return indicators
 
-cache = {}
+cache = {'countries':countries(), 'indicators':indicators()}

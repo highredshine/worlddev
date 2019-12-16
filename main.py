@@ -2,12 +2,9 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from common import title, countries, indicators
+from common import title, cache
 import visuals
 import cluster
-
-countries_dict = countries()
-indicators_dict = indicators()
 
 def description():
     """
@@ -30,7 +27,7 @@ def description():
         'textAlign': 'center'
     })
 
-def visualization():
+def visualization(countries_dict, indicators_dict):
     """
     Returns overall project description in markdown
     """
@@ -85,7 +82,7 @@ def visualization():
         'textAlign': 'center'
     })
 
-def enhancement():
+def enhancement(countries_dict):
     """
     Returns the text and image of architecture summary of the project.
     """
@@ -114,11 +111,13 @@ def index():
     })
 
 def main_page():
+    countries_dict = cache['countries']
+    indicators_dict = cache['indicators']
     return html.Div([
         title(),
         description(),
-        visualization(),
-        enhancement(),
+        visualization(countries_dict, indicators_dict),
+        enhancement(countries_dict),
         index()
     ], style={
         'textAlign': 'center',
