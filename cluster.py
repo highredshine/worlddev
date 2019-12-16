@@ -4,6 +4,7 @@ from sklearn.manifold import TSNE
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
 import plotly.graph_objects as go
+from common import credentials
 
 def query(country_code):
     sql = """
@@ -24,7 +25,7 @@ def query(country_code):
             ]
         }
     }
-    df = pds.read_gbq(sql, configuration=config, project_id='worlddev', credentials='112805492644243954456')
+    df = pds.read_gbq(sql, configuration=config, project_id='worlddev', credentials=credentials())
     return df
 
 def create_embedding(wld, chn, usa, bra):

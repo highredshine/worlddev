@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
 import pandas as pds
+from common import credentials
 
 COLORS = ['rgb(67,67,67)', 'rgb(115,115,115)', 'rgb(49,130,189)', 'rgb(189,189,189)']
 
@@ -26,7 +27,7 @@ def query(country_code, indicator):
             ]
         }
     }
-    df = pds.read_gbq(sql, configuration=config, project_id='worlddev', credentials='112805492644243954456')
+    df = pds.read_gbq(sql, configuration=config, project_id='worlddev', credentials=credentials())
     return df
 
 def visualize(df, stack=False):
