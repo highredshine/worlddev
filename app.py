@@ -10,6 +10,8 @@ from details import details_page
 import visuals
 from common import cache
 
+cache = cache()
+
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', '/assets/style.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
