@@ -26,7 +26,7 @@ def query(country_code, indicator):
             ]
         }
     }
-    df = pds.read_gbq(sql, configuration=config, project_id='worlddev', credentials='key.json')
+    df = pds.read_gbq(sql, configuration=config, project_id='worlddev', credentials='112805492644243954456')
     return df
 
 def visualize(df, stack=False):
