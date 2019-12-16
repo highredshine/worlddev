@@ -1,12 +1,10 @@
 import plotly.graph_objects as go
 import pandas as pds
-from common import credentials
-
-COLORS = ['rgb(67,67,67)', 'rgb(115,115,115)', 'rgb(49,130,189)', 'rgb(189,189,189)']
+from common import credentials, color, cache
 
 def query(country_code, indicator):
     sql = """
-        SELECT country_name, indicator, year, value
+        SELECT country_name as country, indicator, year, value
         FROM `worlddev.wdi.main`
         WHERE country_code = @country_code AND indicator = @indicator
     """
@@ -27,19 +25,39 @@ def query(country_code, indicator):
             ]
         }
     }
-    df = pds.read_gbq(sql, configuration=config, project_id='worlddev', credentials=credentials())
-    return df
+    key = country_code+'-'+indicator
+    if key not in cache:
+        cache[key] = pds.read_gbq(sql, 
+                                  configuration=config, 
+                                  project_id='worlddev', 
+                                  credentials=credentials())
+    return cache[key]
 
-def visualize(df, stack=False):
-    sources = ['value']
-    x = df['year']
-    name = df['indicator'][0]
+    
+def visualize(queries, by):
+    categories = [] 
+    earliest = queries[0]['year'].min()
+    latest = queries[0]['year'].max()
+    for query in queries:
+        first_year = query['year'].min()
+        last_year = query['year'].max()
+        if earliest < first_year:
+            earliest = first_year
+        if latest > last_year:
+            latest = last_year
+        categories.append(query[by][0])
+    for i in range(len(queries)):
+        queries[i] = queries[i][(queries[i].year >= earliest) & (queries[i].year <= latest)]
+        if by == 'indicator':
+            vals = queries[i]['value']
+            queries[i]['value'] = (vals-vals.mean())/vals.std()
     fig = go.Figure()
-    for i, s in enumerate(sources):
-        fig.add_trace(go.Scatter(x=x, y=df[s], mode='lines', name=name,
-                                 line={'width': 2, 'color': COLORS[i]},
-                                 stackgroup='stack' if stack else None))
-
+    for i in range(len(queries)):
+        query = queries[i]
+        fig.add_trace(go.Scatter(x=query['year'], y=query['value'], name=categories[i],
+                                 mode='lines', 
+                                 line={'width': 2, 'color': color()},
+                                 fill='none'))
     fig.update_layout(template='plotly_dark',
                       plot_bgcolor='#23272c',
                       paper_bgcolor='#23272c',
@@ -47,4 +65,14 @@ def visualize(df, stack=False):
                       xaxis_title='Year')
     return fig
 
+def callback_byIndicator(country_code, indicators):
+    queries = []
+    for indicator in indicators:
+        queries.append(query(country_code, indicator))
+    return visualize(queries, 'indicator')
 
+def callback_byCountries(country_codes, indicator):
+    queries = []
+    for country_code in country_codes:
+        queries.append(query(country_code, indicator))
+    return visualize(queries, 'country')

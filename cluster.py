@@ -4,7 +4,7 @@ from sklearn.manifold import TSNE
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
 import plotly.graph_objects as go
-from common import credentials
+from common import credentials, cache,
 
 def query(country_code):
     sql = """
@@ -25,21 +25,22 @@ def query(country_code):
             ]
         }
     }
-    df = pds.read_gbq(sql, configuration=config, project_id='worlddev', credentials=credentials())
-    return df
+    if country_code not in cache:
+        cache[country_code] = pds.read_gbq(sql, 
+                                           configuration=config, 
+                                           project_id='worlddev', 
+                                           credentials=credentials())
+    return cache[country_code]
 
-def create_embedding(wld, chn, usa, bra):
-    merge1 = pds.merge(wld, chn, on='indicator', how='inner')
-    merge1 = merge1.rename(columns={"mean_x": "wld", "mean_y": "chn"})
-    merge2 = pds.merge(usa, bra, on='indicator', how='inner')
-    merge2 = merge2.rename(columns={"mean_x": "usa", "mean_y": "bra"})
-    embeddings = pds.merge(merge1, merge2, on='indicator', how='inner')
+def clustering(countries, queries):
+    pca = PCA(n_components=3)
+    embeddings = queries[0].rename(columns={'mean':countries[0]})
+    for i in range(1,len(queries)):
+        embeddings = pds.merge(embeddings, 
+                               queries[i].rename(columns={'mean':countries[i]}), 
+                               on='indicator', how='inner')
     embeddings = embeddings.drop(['indicator'], axis=1)
     embeddings = np.transpose(np.array(embeddings))
-    return embeddings
-
-def clustering(embeddings):
-    pca = PCA(n_components=2)
     vectors = pca.fit_transform(embeddings)
     normalizer = preprocessing.Normalizer()
     norm_vectors = normalizer.fit_transform(vectors, 'l2')
@@ -59,5 +60,6 @@ def clustering(embeddings):
     ))
     fig.update_layout(template='plotly_dark',
                       plot_bgcolor='#23272c',
-                      paper_bgcolor='#23272c')
+                      paper_bgcolor='#23272c'
+                      )
     return fig

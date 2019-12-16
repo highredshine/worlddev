@@ -7,6 +7,8 @@ from main import main_page
 from about import about_page
 from details import details_page
 
+import visuals
+
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', '/assets/style.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -17,19 +19,20 @@ app.layout = html.Div([
         html.Div(id='page-content')
     ])
 
-# @app.callback(Output('page-1-content', 'children'),
-#               [Input('page-1-dropdown', 'value')])
-# def page_1_dropdown(value):
-#     return 'You have selected "{}"'.format(value)
+@app.callback(Output('byIndicator-graph', 'figure'),
+             [Input('country-dropdown-byIndicator', 'value'),
+              Input('indicator-dropdown-byIndicator', 'value')])
+def byIndicator(country_code, indicators):
+    return visuals.callback_byIndicator(country_code, indicators)
 
 
-# @app.callback(Output('page-2-content', 'children'),
-#               [Input('page-2-radios', 'value')])
-# def page_2_radios(value):
-#     return 'You have selected "{}"'.format(value)
+@app.callback(Output('byCountries-graph', 'figure'),
+             [Input('country-dropdown-byCountries', 'value'),
+              Input('indicator-dropdown-byCountries', 'value')])
+def byCountries(country_codes, indicator):
+    return visuals.callback_byCountries(country_codes, indicator)
+    
 
-
-# Update the index
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
