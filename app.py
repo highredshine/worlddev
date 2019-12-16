@@ -3,9 +3,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 
-from pages.main import main_page
-from pages.about import about_page
-from pages.details import details_page
+from main import main_page
+from about import about_page
+from details import details_page
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', '/assets/style.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
