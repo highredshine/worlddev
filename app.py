@@ -6,7 +6,6 @@ from dash.dependencies import Input, Output
 from main import main_page
 from about import about_page
 from details import details_page
-from common import address
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', '/assets/style.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -44,4 +43,4 @@ def display_page(pathname):
         return '404'
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host=address())
+    app.run_server(debug=True, host='35.239.182.123')
