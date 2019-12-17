@@ -2,4 +2,4 @@
 Web Application project on world development indicators
 
 
-http://35.239.182.123:8080/
+https://104.197.127.8:8080/
