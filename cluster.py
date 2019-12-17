@@ -32,31 +32,53 @@ def query(cache, country_code):
                                            credentials=credentials())
     return cache[country_code]
 
-def getAll(cache):
+def getAllCountries(cache):
     sql = """
-        SELECT m.country_code
+        SELECT m.country_code, country_name
         FROM `worlddev.wdi.main` as m, `worlddev.wdi.countries` as c
         WHERE m.country_code = c.country_code
-        GROUP BY country_code
+        GROUP BY country_code, country_name
         HAVING COUNT(DISTINCT m.indicator)>= 249
     """
     if 'all' not in cache:
         cache['all'] = pds.read_gbq(sql, 
                                            project_id='worlddev', 
                                            credentials=credentials())
-    countries = cache['all']['country_code']
-    queries = []
-    for country_code in countries:
-        queries.append(query(cache, country_code))
-    return countries, queries
+    countries = cache['all']
+    return countries
 
-def clustering(cache):
-    pca = PCA(n_components=3)
-    countries, queries = getAll(cache)
-    embeddings = queries[0].rename(columns={'mean':countries[0]})
+def getIndicators(countries, cache):
+    queries = []
+    for country_code in countries['country_code']:
+        queries.append(query(cache, country_code))
+    return queries
+
+def between(vec, xrange):
+    indices = []
+    a, b = xrange
+    for i in range(len(vec)):
+        val = vec[i]
+        if val > a and val < b:
+            indices.append(i)
+    return indices
+
+def identify(countries, vec, cluster_range):
+    codes = np.array(countries['country_code'])
+    names = np.array(countries['country_name'])
+    codes_c = codes[between(vec, cluster_range)]
+    names_c = names[between(vec, cluster_range)]
+    cluster = pds.DataFrame({'country_code': codes_c, 'country_name': names_c}, 
+                            columns=['country_code', 'country_name'])
+    return cluster
+
+def model(countries, cache):
+    pca = PCA(n_components=2)
+    queries = getIndicators(countries, cache)
+    embeddings = queries[0].rename(columns={'mean':countries['country_code'][0]})
     for i in range(1,len(queries)):
         embeddings = pds.merge(embeddings, 
-                               queries[i].rename(columns={'mean':countries[i]}), 
+                               queries[i].rename(
+                                   columns={'mean':countries['country_code'][i]}), 
                                on='indicator', how='inner')
     embeddings = embeddings.drop(['indicator'], axis=1)
     embeddings = np.transpose(np.array(embeddings))
@@ -68,13 +90,16 @@ def clustering(cache):
     for x,y in norm_vectors:
         x_vec.append(x)
         y_vec.append(y)
-    countries = ['World', 'China', 'USA', 'Brazil']
+    return x_vec, y_vec
+        
+def plot(countries, coordinates):
+    x_vec, y_vec = coordinates
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x = x_vec,
         y = y_vec,
         mode = 'markers+text',
-        text = countries,
+        text = countries['country_name'],
         textposition='top center'
     ))
     fig.update_layout(template='plotly_dark',
